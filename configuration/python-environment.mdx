@@ -1,0 +1,74 @@
+---
+title: "Python environment management"
+description: "Manage Frappe's Python virtual environment for development and production."
+---
+
+Frappe and all its Python dependencies run inside an isolated virtual environment located in the `env/` directory of your bench. Using an isolated environment means that Frappe's dependencies cannot conflict with system Python packages or other projects on the same machine. It also makes the bench portable and reproducible across different servers.
+
+<Tip>
+  Always activate the bench's virtual environment before running any Python commands related to Frappe. This ensures you are using the correct Python interpreter and the exact package versions that Frappe depends on.
+</Tip>
+
+## Activate the environment
+
+```bash
+source env/bin/activate
+```
+
+Your shell prompt will change to show the environment name, confirming it is active.
+
+## Deactivate the environment
+
+When you are finished, return to the system Python environment:
+
+```bash
+source env/bin/deactivate
+```
+
+## Install or reinstall Frappe in the environment
+
+If you need to install or force-reinstall the Frappe package inside the bench environment (for example after pulling a new branch or when developing locally):
+
+```bash
+./env/bin/python -m pip install -q -U -e /apps/frappe
+```
+
+Using `./env/bin/python` directly works even when the environment is not activated.
+
+## Create a new virtual environment for a production user
+
+For production setups, create a dedicated Linux user for the bench and set up a virtual environment for that user before installing `frappe-bench`.
+
+<Steps>
+  <Step title="Create the production user">
+    ```bash
+    sudo adduser dcode-frappe
+    sudo usermod -aG sudo dcode-frappe
+    su - dcode-frappe
+    ```
+  </Step>
+
+  <Step title="Create the virtual environment">
+    ```bash
+    python3 -m venv /path/to/my_env
+    ```
+
+    Replace `/path/to/my_env` with the directory where you want to store the environment, for example `/home/dcode-frappe/my_env`.
+  </Step>
+
+  <Step title="Activate the new environment">
+    ```bash
+    source /path/to/my_env/bin/activate
+    ```
+  </Step>
+
+  <Step title="Install frappe-bench inside the environment">
+    With the environment active, install `frappe-bench`:
+
+    ```bash
+    pip3 install frappe-bench
+    ```
+
+    Then proceed with `bench init` and the remaining installation steps.
+  </Step>
+</Steps>

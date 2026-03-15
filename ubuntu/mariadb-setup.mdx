@@ -1,0 +1,91 @@
+---
+title: "Install and configure MariaDB"
+description: "Install MariaDB 10.3 on Ubuntu and configure it for Frappe's Unicode requirements."
+---
+
+Frappe requires MariaDB 10.3.x and a specific UTF-8 configuration to store multi-language data correctly. Follow all three steps below — skipping the configuration step will cause character encoding errors at runtime.
+
+<Steps>
+  <Step title="Install MariaDB 10.3">
+    The commands differ slightly between Ubuntu versions. Use the tab for your OS:
+
+    <Tabs>
+      <Tab title="Ubuntu 20.04">
+        ```bash
+        sudo apt-get install software-properties-common
+        sudo apt-key adv --fetch-keys 'https://mariadb.org/mariadb_release_signing_key.asc'
+        sudo add-apt-repository 'deb [arch=amd64,arm64,ppc64el] https://ftp.icm.edu.pl/pub/unix/database/mariadb/repo/10.3/ubuntu focal main'
+        sudo apt update
+        sudo apt install mariadb-server
+        ```
+      </Tab>
+      <Tab title="Ubuntu 18.04">
+        ```bash
+        sudo apt-get install software-properties-common dirmngr apt-transport-https
+        sudo apt-key adv --fetch-keys 'https://mariadb.org/mariadb_release_signing_key.asc'
+        sudo add-apt-repository 'deb [arch=amd64,arm64,ppc64el] https://mirrors.aliyun.com/mariadb/repo/10.3/ubuntu bionic main'
+        sudo apt update
+        sudo apt install mariadb-server
+        ```
+      </Tab>
+    </Tabs>
+
+    During installation you may be prompted to set a MySQL root password. If the prompt does not appear, run the secure installation script manually:
+
+    ```bash
+    sudo mysql_secure_installation
+    ```
+  </Step>
+
+  <Step title="Install MariaDB development files">
+    Install `libmysqlclient-dev`, which provides the C headers that Python's MySQL client library compiles against:
+
+    ```bash
+    sudo apt-get install libmysqlclient-dev
+    ```
+  </Step>
+
+  <Step title="Configure MariaDB for Unicode">
+    Frappe stores data using the `utf8mb4` character set to support the full Unicode range. You need to add this configuration to MariaDB's config file.
+
+    <Warning>
+      Back up `/etc/mysql/my.cnf` before editing it. An error in this file will prevent MariaDB from starting.
+    </Warning>
+
+    If `nano` is not installed, install it first:
+
+    ```bash
+    sudo apt install nano
+    ```
+
+    Open the MariaDB configuration file:
+
+    ```bash
+    sudo nano /etc/mysql/my.cnf
+    ```
+
+    Add the following lines to the file:
+
+    ```
+    [mysqld]
+    character-set-client-handshake = FALSE
+    character-set-server = utf8mb4
+    collation-server = utf8mb4_unicode_ci
+
+    [mysql]
+    default-character-set = utf8mb4
+    ```
+
+    Save the file with **Ctrl+X**, then **Y**, then **Enter**.
+
+    Restart MariaDB to apply the changes:
+
+    ```bash
+    sudo service mysql restart
+    ```
+  </Step>
+</Steps>
+
+## Next step
+
+Proceed to [install Node.js and Redis](/ubuntu/nodejs-redis).

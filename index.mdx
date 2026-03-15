@@ -1,97 +1,101 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "Frappe & ERPNext Installation Guide"
+description: "The complete guide to install Frappe and ERPNext on your Ubuntu or ArchLinux system."
 ---
 
-## Setting up
+## Get started
 
-Get your documentation site up and running in minutes.
+Choose your installation path and get Frappe and ERPNext running on your system.
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
-
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+<CardGroup cols={2}>
+  <Card title="Ubuntu Installation" icon="ubuntu" href="/ubuntu/system-dependencies">
+    Full step-by-step guide for Ubuntu 18.04 and 20.04, from system dependencies to a running ERPNext instance.
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
+  <Card title="ArchLinux Installation" icon="linux" href="/archlinux/installation">
+    Install Frappe and ERPNext on ArchLinux using pacman and the bench CLI.
   </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
+  <Card title="Prerequisites" icon="list-check" href="/prerequisites">
+    Review the system requirements before you begin installation.
   </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
+  <Card title="Production Setup" icon="server" href="/production/setup">
+    Configure Nginx, Supervisor, and SSL for a production-ready deployment.
   </Card>
-</Columns>
+</CardGroup>
 
-## Create beautiful pages
+## What you'll install
 
-Everything you need to create world-class documentation.
+Frappe is an open-source full-stack web framework. ERPNext is the world's leading open-source ERP, built on top of Frappe. This guide walks you through installing the complete stack:
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
+<CardGroup cols={3}>
+  <Card title="Frappe Framework" icon="layer-group">
+    The Python/JavaScript web framework that powers ERPNext and all Frappe apps.
   </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
+  <Card title="ERPNext" icon="building">
+    Full-featured ERP covering accounting, inventory, HR, manufacturing, and more.
   </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
+  <Card title="MariaDB" icon="database">
+    The recommended database backend, configured for full Unicode (utf8mb4) support.
   </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
+  <Card title="Redis" icon="bolt">
+    In-memory store used for caching, queuing, and real-time updates.
   </Card>
-</Columns>
+  <Card title="Node.js & Yarn" icon="node-js">
+    JavaScript runtime and package manager for building Frappe's frontend assets.
+  </Card>
+  <Card title="Nginx & Supervisor" icon="gear">
+    Reverse proxy and process manager for production deployments.
+  </Card>
+</CardGroup>
 
-## Need inspiration?
+## Quick overview of the installation process
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+<Steps>
+  <Step title="Install system dependencies">
+    Install Python, Node.js, Redis, MariaDB, Yarn, and wkhtmltopdf on your system.
+  </Step>
+  <Step title="Install frappe-bench">
+    Install the `bench` CLI tool using pip, which manages your Frappe environments.
+  </Step>
+  <Step title="Initialize a bench">
+    Run `bench init frappe-bench --frappe-branch version-15` to create your Frappe workspace.
+  </Step>
+  <Step title="Create a site">
+    Run `bench new-site yoursite.com` to create a new Frappe site with its own database.
+  </Step>
+  <Step title="Install ERPNext">
+    Run `bench get-app erpnext` and `bench --site yoursite.com install-app erpnext` to deploy ERPNext.
+  </Step>
+  <Step title="Go live (optional)">
+    Run `sudo bench setup production` to configure Nginx and Supervisor for production use.
+  </Step>
+</Steps>
+
+## Automation scripts
+
+If you prefer to automate the installation, ready-to-use bash scripts are available for every major step.
+
+<CardGroup cols={2}>
+  <Card title="Scripts overview" icon="scroll" href="/scripts/overview">
+    Overview of all available automation scripts and how to use them.
+  </Card>
+  <Card title="Install packages script" icon="download" href="/scripts/install-packages">
+    Automate system dependency installation with a single script.
+  </Card>
+  <Card title="Init bench script" icon="play" href="/scripts/init-bench">
+    Initialize the Frappe bench automatically.
+  </Card>
+  <Card title="Production setup script" icon="rocket" href="/scripts/production-setup">
+    Configure Supervisor and Nginx for production in one command.
+  </Card>
+</CardGroup>
+
+## Reference
+
+<CardGroup cols={2}>
+  <Card title="Bench commands" icon="terminal" href="/reference/bench-commands">
+    Complete reference for all `bench` CLI commands used in this guide.
+  </Card>
+  <Card title="Troubleshooting" icon="wrench" href="/reference/troubleshooting">
+    Common issues and fixes for MariaDB, Redis, Nginx, and Supervisor.
+  </Card>
+</CardGroup>

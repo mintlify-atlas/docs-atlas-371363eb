@@ -1,0 +1,59 @@
+---
+title: "Configure MariaDB for Unicode"
+description: "Configure MariaDB to use utf8mb4 encoding for full Unicode support in Frappe."
+---
+
+Frappe stores multilingual content, emoji, and special characters across its doctypes and user data. By default, MariaDB uses a character set that cannot represent the full Unicode range. Switching to `utf8mb4` ensures that every character — from Arabic script to Japanese kanji to emoji — is stored and retrieved correctly without data corruption or silent truncation.
+
+<Warning>
+  You must restart MariaDB after editing the configuration file for the changes to take effect. Plan this step during a maintenance window if you are working on a live server.
+</Warning>
+
+<Steps>
+  <Step title="Install nano (if needed)">
+    If `nano` is not already installed on your system, install it first:
+
+    ```bash
+    sudo apt install nano
+    ```
+  </Step>
+
+  <Step title="Edit the MariaDB configuration file">
+    Open the main MariaDB configuration file:
+
+    ```bash
+    sudo nano /etc/mysql/my.cnf
+    ```
+  </Step>
+
+  <Step title="Add the utf8mb4 configuration">
+    Add the following lines to the file. If the `[mysqld]` or `[mysql]` sections already exist, add the directives inside the existing sections rather than creating duplicate headers:
+
+    ```ini
+    [mysqld]
+    character-set-client-handshake = FALSE
+    character-set-server = utf8mb4
+    collation-server = utf8mb4_unicode_ci
+
+    [mysql]
+    default-character-set = utf8mb4
+    ```
+
+    - `character-set-client-handshake = FALSE` forces the server character set regardless of what the client requests.
+    - `utf8mb4_unicode_ci` is the recommended collation for Frappe because it provides accurate case-insensitive comparisons across languages.
+  </Step>
+
+  <Step title="Save and exit">
+    Save the file with **Ctrl+X**, then press **Y** to confirm, then **Enter** to write the file.
+  </Step>
+
+  <Step title="Restart MariaDB">
+    Restart the MariaDB service to apply the new character set configuration:
+
+    ```bash
+    sudo service mysql restart
+    ```
+
+    After restarting, any new databases and tables created by Frappe will use `utf8mb4` encoding by default.
+  </Step>
+</Steps>

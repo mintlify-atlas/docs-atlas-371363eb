@@ -1,0 +1,116 @@
+---
+title: "Install ERPNext on ArchLinux"
+description: "Complete guide to installing Frappe and ERPNext on ArchLinux."
+---
+
+<Steps>
+  <Step title="Install pre-requisites">
+    Update your system and install all required packages:
+
+    ```bash
+    pacman -Syu
+    pacman -S mariadb redis python2-pip wkhtmltopdf git npm cronie nginx openssl
+    npm install -g yarn
+    ```
+  </Step>
+
+  <Step title="Set up MariaDB">
+    Initialize the MariaDB data directory, start the service, and run the secure installation wizard:
+
+    ```bash
+    mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql
+    systemctl start mariadb
+    mysql_secure_installation
+    ```
+
+    For more information on MariaDB installation on ArchLinux, refer to the [ArchLinux wiki](https://wiki.archlinux.org/index.php/MySQL#Installation).
+  </Step>
+
+  <Step title="Configure MariaDB for Unicode">
+    Open the MariaDB configuration file:
+
+    ```bash
+    nano /etc/mysql/my.cnf
+    ```
+
+    Add the following configuration block:
+
+    ```ini
+    [mysqld]
+    innodb-file-format=barracuda
+    innodb-file-per-table=1
+    innodb-large-prefix=1
+    character-set-client-handshake = FALSE
+    character-set-server = utf8mb4
+    collation-server = utf8mb4_unicode_ci
+
+    [mysql]
+    default-character-set = utf8mb4
+    ```
+
+    Press `Ctrl+X`, then `Y`, then `Enter` to save the file.
+  </Step>
+
+  <Step title="Start services">
+    Start MariaDB and Redis:
+
+    ```bash
+    systemctl start mariadb redis
+    ```
+
+    <Info>
+      Cron is not enabled by default on ArchLinux. You must explicitly enable the `cronie` service so that automated tasks such as backups and certificate renewals run correctly:
+
+      ```bash
+      systemctl enable cronie
+      ```
+    </Info>
+  </Step>
+
+  <Step title="Install ERPNext">
+    Clone the bench repository, install it as your local user, and add it to your shell path:
+
+    ```bash
+    git clone https://github.com/frappe/bench bench-repo
+    pip2 install --user -e bench-repo
+    echo "export PATH=$HOME/.local/bin:$PATH" >> ~/.bashrc
+    source ~/.bashrc
+    ```
+
+    Initialize the Frappe bench and move into its directory:
+
+    ```bash
+    bench init frappe-bench && cd frappe-bench
+    ```
+
+    Fetch the ERPNext application:
+
+    ```bash
+    bench get-app erpnext https://github.com/frappe/erpnext
+    ```
+
+    Create a new site and install ERPNext on it:
+
+    ```bash
+    bench new-site site1.local
+    bench --site site1.local install-app erpnext
+    bench use site1.local
+    ```
+
+    Start the bench:
+
+    ```bash
+    bench start
+    ```
+  </Step>
+
+  <Step title="Access ERPNext">
+    Open your browser and navigate to:
+
+    ```
+    http://localhost:8000
+    ```
+
+    Log in with the administrator credentials you set during site creation.
+  </Step>
+</Steps>

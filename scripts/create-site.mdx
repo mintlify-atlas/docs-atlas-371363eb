@@ -1,0 +1,68 @@
+---
+title: "Create site script"
+description: "Automate new site creation with the create_frappe_site.sh script."
+---
+
+The `create_frappe_site.sh` script creates a new Frappe site with configurable database connection details and admin credentials. Missing passwords are requested interactively at runtime.
+
+## Full script
+
+```bash
+#!/bin/bash
+
+# Input:
+#   - Site name: Required
+#   - Database type (optional): Default to mariadb
+#   - Database host (optional): Default to localhost
+#   - Database port (optional): Default to 3306
+#   - Database username (optional): Default to root
+#   - Database password (optional): Prompt for input if not provided
+#   - Admin password (optional): Prompt for input if not provided
+SITE_NAME="$1"
+DB_TYPE="${2:-mariadb}"
+DB_HOST="${3:-localhost}"
+DB_PORT="${4:-3306}"
+DB_USERNAME="${5:-root}"
+DB_PASSWORD="${6}"
+ADMIN_PASSWORD="${7}"
+
+# Prompt for database password if not provided
+if [ -z "$DB_PASSWORD" ]; then
+  read -p "Enter database password: " DB_PASSWORD
+fi
+
+# Prompt for admin password if not provided
+if [ -z "$ADMIN_PASSWORD" ]; then
+  read -p "Enter admin password: " ADMIN_PASSWORD
+fi
+
+# Create the new site
+bench new-site --db-name ${SITE_NAME} --db-password ${DB_PASSWORD} \
+  --db-type ${DB_TYPE} --db-host ${DB_HOST} --db-port ${DB_PORT} \
+  --mariadb-root-username ${DB_USERNAME} --mariadb-root-password ${DB_PASSWORD} \
+  --no-mariadb-socket --admin-password ${ADMIN_PASSWORD}
+
+echo "New site '${SITE_NAME}' created successfully!"
+```
+
+## Parameters
+
+| Position | Variable | Required | Default | Description |
+|----------|----------|----------|---------|-------------|
+| `$1` | `SITE_NAME` | Yes | — | The site name (e.g., `mysite.com`) |
+| `$2` | `DB_TYPE` | No | `mariadb` | Database type |
+| `$3` | `DB_HOST` | No | `localhost` | Database host address |
+| `$4` | `DB_PORT` | No | `3306` | Database port |
+| `$5` | `DB_USERNAME` | No | `root` | Database root username |
+| `$6` | `DB_PASSWORD` | No | prompted | Database root password |
+| `$7` | `ADMIN_PASSWORD` | No | prompted | Frappe site admin password |
+
+## Usage
+
+```bash
+# Basic usage (will prompt for passwords)
+./create_frappe_site.sh mysite.com
+
+# Full usage with all arguments
+./create_frappe_site.sh mysite.com mariadb localhost 3306 root mydbpass myadminpass
+```

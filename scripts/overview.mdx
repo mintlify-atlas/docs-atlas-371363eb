@@ -1,0 +1,50 @@
+---
+title: "Automation scripts overview"
+description: "Overview of all Bash scripts for automating Frappe and ERPNext installation tasks."
+---
+
+The automation scripts in this guide let you complete every stage of a Frappe and ERPNext installation — from installing system packages to configuring a production server — without running each command by hand. Each script accepts clearly defined inputs and can be re-run safely.
+
+## Available scripts
+
+<CardGroup cols={2}>
+  <Card title="install_frappe_packages.sh" icon="box">
+    Install all system dependencies required for Frappe, including Git, Python, Node.js, MariaDB, Redis, Yarn, and wkhtmltopdf.
+  </Card>
+  <Card title="init_frappe_bench.sh" icon="play">
+    Initialize the Frappe bench directory and start the development server. Accepts an optional branch argument.
+  </Card>
+  <Card title="create_frappe_site.sh" icon="globe">
+    Create a new Frappe site with configurable database connection details and admin credentials.
+  </Card>
+  <Card title="config_supervisor.sh" icon="server">
+    Configure Supervisor for a named site, including creating the required symlink in `/etc/supervisor/conf.d/`.
+  </Card>
+  <Card title="config_nginx.sh" icon="network-wired">
+    Configure Nginx for a named site, including creating the required symlink in `/etc/nginx/conf.d/`.
+  </Card>
+  <Card title="config_redis.sh" icon="database">
+    Configure Redis for a named site. Recommended for production deployments.
+  </Card>
+  <Card title="config_production_site.sh" icon="rocket">
+    Set up full production mode for a site under a given system user. Wraps `bench setup production`.
+  </Card>
+</CardGroup>
+
+## Make scripts executable
+
+Before running any script, mark it as executable:
+
+```bash
+chmod +x install_frappe_packages.sh
+chmod +x init_frappe_bench.sh
+chmod +x create_frappe_site.sh
+chmod +x config_supervisor.sh
+chmod +x config_nginx.sh
+chmod +x config_redis.sh
+chmod +x config_production_site.sh
+```
+
+<Tip>
+  Review each script before running it and adjust the input values — such as site name, branch version, database credentials, and system username — to match your environment.
+</Tip>

@@ -1,0 +1,84 @@
+---
+title: "Configure services scripts"
+description: "Automate Supervisor, Nginx, and Redis configuration with service scripts."
+---
+
+Three separate scripts handle service configuration for a Frappe site. Each script accepts a site name as its only argument and sets up the corresponding service.
+
+<Note>
+  Run these scripts after you have created your site with `create_frappe_site.sh`. Each script targets a specific named site, so the site must already exist in the bench.
+</Note>
+
+## Scripts
+
+<Tabs>
+  <Tab title="Supervisor">
+    ```bash
+    #!/bin/bash
+
+    # Input:
+    #   - Site name: Required
+    SITE_NAME="$1"
+
+    # Configure supervisor for the site
+    bench --site ${SITE_NAME} setup supervisor
+
+    # Create a symbolic link to the supervisor configuration file
+    sudo ln -s pwd/config/supervisor.conf /etc/supervisor/conf.d/frappe-bench.conf
+
+    echo "Supervisor configured for site '${SITE_NAME}'!"
+    ```
+
+    The script runs `bench --site <site> setup supervisor` to generate the Supervisor configuration for the site, then creates a symlink from the generated config into `/etc/supervisor/conf.d/` so Supervisor picks it up automatically.
+
+    ```bash
+    ./config_supervisor.sh mysite.com
+    ```
+  </Tab>
+  <Tab title="Nginx">
+    ```bash
+    #!/bin/bash
+
+    # Input:
+    #   - Site name: Required
+    SITE_NAME="$1"
+
+    # Configure Nginx for the site
+    bench --site ${SITE_NAME} setup nginx
+
+    # Create a symbolic link to the Nginx configuration file
+    sudo ln -s pwd/config/nginx.conf /etc/nginx/conf.d/frappe-bench.conf
+
+    echo "Nginx configured for site '${SITE_NAME}'!"
+    ```
+
+    The script runs `bench --site <site> setup nginx` to generate the Nginx server block for the site, then creates a symlink from the generated config into `/etc/nginx/conf.d/` so Nginx includes it on reload.
+
+    ```bash
+    ./config_nginx.sh mysite.com
+    ```
+  </Tab>
+  <Tab title="Redis">
+    ```bash
+    #!/bin/bash
+
+    # Input:
+    #   - Site name: Required
+    SITE_NAME="$1"
+
+    # Configure Redis for the site (optional, but recommended for production)
+    bench --site ${SITE_NAME} setup redis
+
+    # Edit the Redis configuration file if needed:
+    # sudo nano /etc/redis/redis.conf
+
+    echo "Redis configured for site '${SITE_NAME}'!"
+    ```
+
+    The script runs `bench --site <site> setup redis` to configure Redis for the site. For custom port assignments, edit `/etc/redis/redis.conf` directly after running this script.
+
+    ```bash
+    ./config_redis.sh mysite.com
+    ```
+  </Tab>
+</Tabs>

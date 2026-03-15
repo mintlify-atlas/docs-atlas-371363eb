@@ -1,0 +1,96 @@
+---
+title: "Site management"
+description: "Create, configure, and manage Frappe sites including backups and dropping sites."
+---
+
+Each Frappe site is an independent installation with its own database, settings, and installed apps. The `bench` CLI provides all the commands you need to create, inspect, back up, and remove sites.
+
+## Create a new site
+
+<Steps>
+  <Step title="Add the site to your hosts file">
+    For local development, map the site name to `127.0.0.1` so your browser can reach it:
+
+    ```bash
+    sudo nano /etc/hosts
+    ```
+
+    Add the following line:
+
+    ```
+    127.0.0.1   frappe.localhost
+    ```
+
+    Save with **Ctrl+X**, **Y**, **Enter**.
+  </Step>
+
+  <Step title="Create the site (basic)">
+    For a quick local setup with interactive prompts for database credentials:
+
+    ```bash
+    bench new-site dcode.com
+    ```
+  </Step>
+
+  <Step title="Create the site (full options)">
+    For automated or production deployments, pass all credentials directly as flags. Replace each `[]` placeholder with your actual values:
+
+    ```bash
+    bench new-site \
+      --db-name [] \
+      --db-password [] \
+      --db-type mariadb \
+      --db-host 127.0.0.1 \
+      --db-port 3306 \
+      --mariadb-root-username root \
+      --mariadb-root-password [] \
+      --no-mariadb-socket \
+      --admin-password Admin \
+      --install-app erpnext \
+      [].cybererps.com
+    ```
+  </Step>
+</Steps>
+
+## Explore and interact with a site
+
+Use the following commands to open a Python console, a MariaDB shell, or trigger a manual backup for a specific site:
+
+```bash
+bench --site library.test console
+bench --site library.test mariadb
+bench --site library.test backup
+```
+
+## Drop a site
+
+<Warning>
+  The `--force` flag removes the site even if errors occur during teardown. This is irreversible — all data for the site will be permanently deleted. Take a backup before running this command.
+</Warning>
+
+```bash
+bench drop-site \
+  --mariadb-root-username admin@localhost \
+  --mariadb-root-password admin \
+  --force banna.com
+```
+
+## Python virtual environment
+
+Frappe uses a Python virtual environment inside your bench directory. Activate it when you need to run Python commands or install packages manually:
+
+```bash
+source env/bin/activate
+```
+
+Deactivate when done:
+
+```bash
+source env/bin/deactivate
+```
+
+To install or reinstall the Frappe package inside the bench environment directly:
+
+```bash
+./env/bin/python -m pip install -q -U -e /apps/frappe
+```

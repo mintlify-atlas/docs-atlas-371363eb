@@ -1,0 +1,77 @@
+---
+title: "Install and configure Nginx and Supervisor"
+description: "Install Nginx and Supervisor and link their configuration for Frappe."
+---
+
+<Steps>
+  <Step title="Install Supervisor">
+    Install Supervisor and generate the Frappe-specific configuration:
+
+    ```bash
+    sudo apt -y install supervisor
+    bench setup supervisor
+    ```
+
+    <Note>
+      The `bench setup supervisor` command generates a `config/supervisor.conf` file inside your bench directory. You symlink this file into Supervisor's configuration directory so that Supervisor picks it up automatically — you do not need to write the configuration by hand.
+    </Note>
+
+    Symlink the generated config into Supervisor's configuration directory:
+
+    ```bash
+    sudo ln -s `pwd`/config/supervisor.conf /etc/supervisor/conf.d/frappe-bench.conf
+    ```
+  </Step>
+
+  <Step title="Fix Supervisor file ownership">
+    <Warning>
+      By default, Supervisor may not have the correct file ownership to manage Frappe processes. If you skip this step, Supervisor will fail to start the Frappe workers.
+    </Warning>
+
+    Open the Supervisor daemon configuration file:
+
+    ```bash
+    sudo nano /etc/supervisor/supervisord.conf
+    ```
+
+    Find the `chown=` directive and set it to your Frappe system user:
+
+    ```ini
+    chown= yourfrappeusername:yourfrappeusername
+    ```
+
+    Save the file and restart Supervisor to apply the change:
+
+    ```bash
+    sudo -A systemctl restart supervisor
+    ```
+  </Step>
+
+  <Step title="Install Nginx">
+    Install Nginx and generate the Frappe-specific Nginx configuration:
+
+    ```bash
+    sudo apt -y install nginx
+    bench setup nginx
+    ```
+
+    <Note>
+      Similar to Supervisor, `bench setup nginx` generates a `config/nginx.conf` file in your bench directory. Symlinking it keeps your Nginx configuration in sync whenever you run `bench setup nginx` again.
+    </Note>
+
+    Symlink the generated config into Nginx's configuration directory:
+
+    ```bash
+    sudo ln -s `pwd`/config/nginx.conf /etc/nginx/conf.d/frappe-bench.conf
+    ```
+  </Step>
+
+  <Step title="Reload services">
+    Reload Nginx to apply the new configuration, then restart Supervisor so it picks up all Frappe workers:
+
+    ```bash
+    sudo service nginx reload
+    sudo service supervisor restart
+    ```
+  </Step>
+</Steps>

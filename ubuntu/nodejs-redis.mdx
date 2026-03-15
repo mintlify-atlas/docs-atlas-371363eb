@@ -1,0 +1,69 @@
+---
+title: "Install Node.js and Redis"
+description: "Install Node.js 20.x and Redis on Ubuntu for Frappe's JavaScript and caching requirements."
+---
+
+Frappe uses Node.js to build its frontend assets and Redis as a caching and real-time message broker. Both must be installed and running before you initialize a bench.
+
+<Steps>
+  <Step title="Install Redis">
+    Install the Redis server:
+
+    ```bash
+    sudo apt-get install redis-server
+    ```
+  </Step>
+
+  <Step title="Install Node.js 20.x">
+    Use the NodeSource setup script to install Node.js 20.x from the official repository:
+
+    ```bash
+    sudo apt-get install curl
+    curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+    sudo apt-get install -y nodejs
+    ```
+  </Step>
+
+  <Step title="Install Yarn">
+    Install Yarn globally via npm:
+
+    ```bash
+    sudo npm install -g yarn
+    ```
+
+    If you encounter errors during installation, remove any conflicting Yarn installation and try again:
+
+    ```bash
+    sudo npm uninstall -g yarn
+    sudo rm -rf /usr/bin/yarn
+    ```
+
+    Then re-run the install command:
+
+    ```bash
+    sudo npm install -g yarn
+    ```
+  </Step>
+</Steps>
+
+## Verify your installation
+
+<Tip>
+  Confirm that Node.js, Yarn, and Redis are all working correctly before moving on. A silent failure here will cause confusing errors later in the bench initialization.
+</Tip>
+
+Run these commands and check the output:
+
+```bash
+node -v
+yarn -v
+redis-cli ping
+```
+
+- `node -v` should print a version number starting with `v20`.
+- `yarn -v` should print a version number starting with `1.`.
+- `redis-cli ping` should return `PONG`.
+
+## Next step
+
+Proceed to [install frappe-bench](/ubuntu/frappe-bench).

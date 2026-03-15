@@ -1,0 +1,55 @@
+---
+title: "Prerequisites"
+description: "System requirements and software versions needed before installing Frappe and ERPNext."
+---
+
+Before you start, confirm that your system meets every requirement listed below. Installing on a system with mismatched versions is the most common cause of a failed Frappe setup.
+
+<Tip>
+  Start with a fresh Ubuntu install whenever possible. An existing system with conflicting package versions, Python environments, or MariaDB configurations can cause hard-to-debug errors.
+</Tip>
+
+## Supported operating systems
+
+- Ubuntu 20.04 LTS
+- Ubuntu 18.04 LTS
+- ArchLinux
+
+## Required software versions
+
+<Warning>
+  These version requirements are strict. Using an older version of Python, Node.js, or MariaDB is likely to cause installation failures or runtime errors. Verify each version before proceeding.
+</Warning>
+
+| Software | Required version | Notes |
+|---|---|---|
+| Python | 3.6 or later | Python 3.8 and 3.10 are well-tested |
+| Node.js | 14 or later | Node.js 20.x is recommended |
+| Redis | 5 | Used for caching and real-time updates |
+| MariaDB | 10.3.x | PostgreSQL 9.5.x is an alternative |
+| Yarn | 1.12 or later | JavaScript package manager |
+| pip | 20 or later | Python package installer |
+| wkhtmltopdf | 0.12.5 (patched Qt) | Required for PDF generation |
+| Cron | Any | Used for scheduled tasks and certificate renewals |
+| Nginx | Any | Required for proxying multi-tenant sites in production |
+
+## Checking installed versions
+
+You can verify your current versions with these commands:
+
+```bash
+python3 -V
+node -v
+yarn -v
+redis-cli --version
+mysql --version
+pip3 --version
+wkhtmltopdf --version
+```
+
+## Next step
+
+Once you have confirmed your system meets all requirements, proceed to install the system dependencies.
+
+- [Install system dependencies on Ubuntu](/ubuntu/system-dependencies)
+- [Install on ArchLinux](/archlinux)

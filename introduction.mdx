@@ -1,0 +1,51 @@
+---
+title: "Introduction"
+description: "Overview of Frappe and ERPNext, what this guide covers, and how to navigate it."
+---
+
+Frappe is an open-source, full-stack web framework built on Python and JavaScript. It comes batteries-included with a database abstraction layer, REST API, authentication, role-based permissions, and a rich UI toolkit — making it the foundation for building complex business applications quickly.
+
+ERPNext is a fully-featured, open-source ERP system built entirely on top of Frappe. It covers accounting, inventory, manufacturing, HR, CRM, project management, and more. Because ERPNext is just a Frappe app, installing it follows the same workflow as any other Frappe application.
+
+## What this guide covers
+
+This guide walks you through a complete, step-by-step installation of Frappe and ERPNext from scratch. It covers:
+
+- **Ubuntu 18.04 and 20.04** — the primary supported Linux distributions
+- **ArchLinux** — community-supported installation path
+- **Production setup** — Nginx, Supervisor, SSL, and multi-site configuration
+
+Each section uses real commands taken directly from the official installation scripts. No filler, no guesswork.
+
+<Note>
+  Use the correct Frappe and ERPNext version numbers for your deployment. This guide uses `version-15` as the example throughout. Replace it with your target version (e.g., `version-14`) wherever it appears.
+</Note>
+
+## Navigate this guide
+
+<CardGroup cols={2}>
+  <Card title="Prerequisites" icon="list-check" href="/prerequisites">
+    Verify your system meets the required software versions before you begin.
+  </Card>
+  <Card title="System dependencies" icon="package" href="/ubuntu/system-dependencies">
+    Install Git, Python, pip, virtualenv, and wkhtmltopdf on Ubuntu.
+  </Card>
+  <Card title="MariaDB setup" icon="database" href="/ubuntu/mariadb-setup">
+    Install and configure MariaDB 10.3 with the correct Unicode settings.
+  </Card>
+  <Card title="Node.js and Redis" icon="server" href="/ubuntu/nodejs-redis">
+    Install Node.js 20.x, Yarn, and Redis for JavaScript and caching support.
+  </Card>
+  <Card title="frappe-bench" icon="terminal" href="/ubuntu/frappe-bench">
+    Install the bench CLI and initialize your first Frappe environment.
+  </Card>
+  <Card title="Create a site" icon="globe" href="/ubuntu/create-site">
+    Create a new Frappe site with its own database and admin credentials.
+  </Card>
+  <Card title="Install ERPNext" icon="building-2" href="/ubuntu/install-erpnext">
+    Get the ERPNext app and install it on your Frappe site.
+  </Card>
+  <Card title="Production setup" icon="rocket" href="/production">
+    Configure Nginx, Supervisor, and SSL for a production deployment.
+  </Card>
+</CardGroup>

@@ -1,0 +1,63 @@
+---
+title: "Install ERPNext"
+description: "Get and install the ERPNext app on your Frappe site."
+---
+
+ERPNext is a Frappe app. Installing it is a two-step process: first you fetch the app into your bench, then you install it on a specific site.
+
+<Steps>
+  <Step title="Get the ERPNext app">
+    Fetch the ERPNext source code into your bench's `apps/` directory. You can pull it from the Frappe registry or directly from GitHub:
+
+    <Tabs>
+      <Tab title="Frappe registry">
+        ```bash
+        bench get-app erpnext --branch version-15
+        ```
+      </Tab>
+      <Tab title="GitHub">
+        ```bash
+        bench get-app https://github.com/frappe/erpnext --branch version-15
+        ```
+      </Tab>
+    </Tabs>
+
+    Replace `version-15` with your target ERPNext version if needed.
+  </Step>
+
+  <Step title="Install ERPNext on your site">
+    Install the ERPNext app onto your Frappe site:
+
+    ```bash
+    bench --site dcode.com install-app erpnext
+    ```
+
+    Replace `dcode.com` with your actual site name.
+  </Step>
+
+  <Step title="Start the bench">
+    Start all bench processes:
+
+    ```bash
+    bench start
+    ```
+
+    <Tip>
+      Once the bench is running, open your browser and navigate to `http://localhost:8000` to access your ERPNext site. Log in with the admin credentials you set during site creation.
+    </Tip>
+  </Step>
+
+  <Step title="Update ERPNext (when needed)">
+    To upgrade ERPNext and Frappe to a newer version branch, run:
+
+    ```bash
+    bench switch-to-branch version-15 frappe erpnext --upgrade
+    git pull upstream version-15
+    bench get-app --branch=version-15 frappe
+    ```
+  </Step>
+</Steps>
+
+## Next step
+
+For a public-facing deployment, proceed to the [production setup](/production) guide to configure Nginx, Supervisor, and SSL.

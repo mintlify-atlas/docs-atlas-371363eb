@@ -1,0 +1,177 @@
+---
+title: "Bench commands reference"
+description: "Complete reference for all bench CLI commands used in this guide."
+---
+
+This page lists every `bench` command used throughout the Frappe and ERPNext installation guide, organized by category.
+
+## Site management
+
+**Create a new site (basic):**
+```bash
+bench new-site <site-name>
+```
+Creates a new Frappe site and prompts for database and admin credentials.
+
+**Create a new site (full options):**
+```bash
+bench new-site --db-name [] --db-password [] --db-type mariadb --db-host 127.0.0.1 --db-port 3306 --mariadb-root-username root --mariadb-root-password [] --no-mariadb-socket --admin-password Admin --install-app erpnext [].cybererps.com
+```
+Creates a new site with explicit database connection details, bypassing MariaDB socket authentication and immediately installing ERPNext.
+
+**Drop a site:**
+```bash
+bench drop-site --mariadb-root-username admin@localhost --mariadb-root-password admin --force banna.com
+```
+Removes an existing site and its database. The `--force` flag skips the confirmation prompt.
+
+**Install an app on a site:**
+```bash
+bench --site <site> install-app <app>
+```
+Installs an app (such as `erpnext`) that has already been fetched into the bench.
+
+**Open the site Python console:**
+```bash
+bench --site <site> console
+```
+Opens an interactive Python shell in the context of the specified site.
+
+**Open the site database console:**
+```bash
+bench --site <site> mariadb
+```
+Opens a MariaDB shell connected to the site's database.
+
+**Back up a site:**
+```bash
+bench --site <site> backup
+```
+Creates a database backup for the specified site.
+
+---
+
+## App management
+
+**Fetch ERPNext by name:**
+```bash
+bench get-app erpnext --branch version-15
+```
+Downloads the ERPNext app from the default Frappe apps registry at the specified branch.
+
+**Fetch ERPNext from a GitHub URL:**
+```bash
+bench get-app https://github.com/frappe/erpnext --branch version-15
+```
+Downloads ERPNext directly from a GitHub repository URL.
+
+**Fetch the Frappe framework at a branch:**
+```bash
+bench get-app --branch=version-15 frappe
+```
+Downloads or updates the Frappe framework app at the specified branch.
+
+---
+
+## Bench lifecycle
+
+**Initialize a new bench:**
+```bash
+bench init frappe-bench --frappe-branch version-15
+```
+Creates the `frappe-bench` directory, clones Frappe at the specified branch, and sets up the Python virtual environment.
+
+**Start the bench (development mode):**
+```bash
+bench start
+```
+Starts all bench processes as defined in the `Procfile`.
+
+**Restart the bench:**
+```bash
+bench restart
+```
+Restarts all running bench processes.
+
+**Check the installed bench version:**
+```bash
+bench --version
+```
+Prints the version of the `bench` CLI currently installed.
+
+---
+
+## Configuration
+
+**Enable DNS-based multitenancy:**
+```bash
+bench config dns_multitenant on
+```
+
+**Disable DNS-based multitenancy:**
+```bash
+bench config dns_multitenant off
+```
+When multitenancy is off, you can assign individual ports to each site.
+
+**Assign an Nginx port to a site:**
+```bash
+bench set-nginx-port <site> <port>
+```
+Assigns a specific port (e.g., `82`) to the named site for Nginx proxying.
+
+**Regenerate the Nginx configuration:**
+```bash
+bench setup nginx
+```
+Rewrites the Nginx config file based on current bench and site settings.
+
+**Generate the Supervisor configuration:**
+```bash
+bench setup supervisor
+```
+Rewrites the Supervisor config file for the bench.
+
+**Generate the Procfile:**
+```bash
+bench setup procfile
+```
+Creates or updates the `Procfile` used by `bench start` in development mode.
+
+**Set up production mode:**
+```bash
+bench setup production <user>
+```
+Configures Supervisor and Nginx for production under the specified system user.
+
+**Disable CSRF protection for a site:**
+```bash
+bench --site <site> set-config ignore_csrf 1
+```
+Sets `ignore_csrf` to `1` in the site config. Use only in trusted development or API-only environments.
+
+---
+
+## Updates
+
+**Switch all apps to a different branch with upgrade:**
+```bash
+bench switch-to-branch version-15 frappe erpnext --upgrade
+```
+Checks out `version-15` for both `frappe` and `erpnext` and runs the upgrade migration.
+
+**Pull the latest changes from upstream:**
+```bash
+git pull upstream version-15
+```
+Pulls the latest commits for the specified branch from the upstream remote inside an app directory.
+
+---
+
+## Frontend
+
+**Add the Frappe UI frontend:**
+```bash
+bench add-frappe-ui
+```
+Scaffolds a new Frappe UI (Vue-based) frontend project inside the bench.

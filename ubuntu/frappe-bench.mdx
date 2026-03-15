@@ -1,0 +1,63 @@
+---
+title: "Install frappe-bench"
+description: "Install the frappe-bench CLI and initialize your first Frappe bench environment."
+---
+
+The `bench` CLI is the primary tool for managing Frappe environments. It handles app installation, site creation, background workers, and production setup.
+
+<Steps>
+  <Step title="Install frappe-bench">
+    The install command differs depending on whether you are setting up a server or a local development machine:
+
+    <Tabs>
+      <Tab title="Server">
+        ```bash
+        pip3 install frappe-bench
+        ```
+      </Tab>
+      <Tab title="Local development">
+        ```bash
+        sudo -H pip3 install frappe-bench
+        ```
+      </Tab>
+    </Tabs>
+
+    <Warning>
+      After installing `frappe-bench`, log out of your terminal session and log back in before continuing. The `bench` command is added to your PATH during install and the change does not take effect until you start a new session.
+    </Warning>
+
+    Verify the installation:
+
+    ```bash
+    bench --version
+    ```
+  </Step>
+
+  <Step title="Initialize the Frappe bench">
+    Create a directory for your Frappe installation and initialize the bench inside it:
+
+    ```bash
+    mkdir frappe-bench
+    cd frappe-bench
+    bench init frappe-bench --frappe-branch version-15
+    ```
+
+    Replace `version-15` with your target Frappe version if needed (e.g., `version-14`).
+
+    <Info>
+      `bench init` does several things at once: it creates a Python virtual environment in `env/`, clones the Frappe framework repository into `apps/frappe/`, sets up the directory structure for sites, and installs all Python dependencies. This step can take several minutes depending on your connection speed.
+    </Info>
+  </Step>
+
+  <Step title="Start the bench">
+    Start all bench processes (web server, background workers, Redis, and the scheduler):
+
+    ```bash
+    bench start
+    ```
+  </Step>
+</Steps>
+
+## Next step
+
+Proceed to [create a Frappe site](/ubuntu/create-site).

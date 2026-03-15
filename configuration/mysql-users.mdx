@@ -1,0 +1,62 @@
+---
+title: "Manage MySQL users"
+description: "Create MySQL users, grant privileges, and manage database access for Frappe."
+---
+
+Frappe creates a dedicated database user for each site automatically during `bench new-site`. However, you may need to create additional users for administration, direct database access, or integration with external tools.
+
+<Warning>
+  Always use strong, unique passwords in production. The example values below (`password`, `admin`, `mypass`) are placeholders — replace them with secure credentials before running any of these commands.
+</Warning>
+
+<Steps>
+  <Step title="Connect to MySQL as root">
+    Open a MySQL session using the root account:
+
+    ```bash
+    sudo mysql -u root -p
+    ```
+
+    You will be prompted for the MySQL root password.
+  </Step>
+
+  <Step title="Create a new user">
+    Create a new database user and grant it full privileges:
+
+    ```sql
+    CREATE USER 'new_user'@'localhost' IDENTIFIED BY 'password';
+    GRANT ALL PRIVILEGES ON * . * TO 'new_user'@'localhost';
+    FLUSH PRIVILEGES;
+    ```
+
+    - `CREATE USER` registers the account with the given password.
+    - `GRANT ALL PRIVILEGES ON * . *` gives the user access to all databases and all tables.
+    - `FLUSH PRIVILEGES` reloads the grant tables so the new permissions take effect immediately.
+  </Step>
+
+  <Step title="Grant all privileges to the admin user">
+    If you need the `admin` user to be able to grant privileges to others (useful for bench operations), use the `WITH GRANT OPTION` clause:
+
+    ```sql
+    GRANT ALL ON *.* TO 'admin'@'localhost' IDENTIFIED BY 'admin' WITH GRANT OPTION;
+    ```
+  </Step>
+
+  <Step title="Set the root user password">
+    To change the password for the `root` MySQL user while connected:
+
+    ```sql
+    SET PASSWORD FOR 'root'@'localhost' = PASSWORD('mypass');
+    ```
+
+    Replace `mypass` with your chosen password. After setting it, run `FLUSH PRIVILEGES;` if the change does not take effect immediately.
+  </Step>
+
+  <Step title="Exit the MySQL session">
+    When you are done managing users, exit the MySQL prompt:
+
+    ```sql
+    EXIT;
+    ```
+  </Step>
+</Steps>

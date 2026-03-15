@@ -1,0 +1,44 @@
+---
+title: "Production setup script"
+description: "Automate production configuration with the config_production_site.sh script."
+---
+
+The `config_production_site.sh` script configures a Frappe site for production by running `bench setup production` under the specified system user.
+
+<Warning>
+  This script calls `sudo bench setup production`, which requires sudo privileges. Run it as a user with sudo access, and ensure the Frappe system user exists before executing the script.
+</Warning>
+
+## Full script
+
+```bash
+#!/bin/bash
+
+# Input:
+#   - Site name: Required
+#   - Frappe user: Required (e.g., dcode-frappe)
+SITE_NAME="$1"
+FRAPPE_USER="$2"
+
+# Configure the production site
+sudo bench --site ${SITE_NAME} setup production ${FRAPPE_USER}
+
+echo "Production site '${SITE_NAME}' configured successfully!"
+```
+
+## Parameters
+
+| Position | Variable | Required | Description |
+|----------|----------|----------|-------------|
+| `$1` | `SITE_NAME` | Yes | The site name (e.g., `mysite.com`) |
+| `$2` | `FRAPPE_USER` | Yes | The Frappe system user (e.g., `dcode-frappe`) |
+
+## Usage
+
+```bash
+./config_production_site.sh mysite.com frappe-user
+```
+
+<Note>
+  Run this script only after completing the full installation — packages installed, bench initialized, site created, and service scripts executed. Running it early may leave your environment in a partially configured state.
+</Note>

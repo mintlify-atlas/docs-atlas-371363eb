@@ -1,0 +1,85 @@
+---
+title: "Configure Supervisor"
+description: "Set up and configure Supervisor to manage Frappe processes in production."
+---
+
+Supervisor is a process control system that keeps Frappe's worker processes (web server, background workers, scheduler) running and automatically restarts them if they crash. It is required for production deployments.
+
+<Warning>
+  The `chown` setting in `supervisord.conf` must match the Linux user that owns your bench directory. If this is wrong, Supervisor will not be able to control Frappe processes and you will see permission errors.
+</Warning>
+
+<Steps>
+  <Step title="Install Supervisor">
+    Install the Supervisor package:
+
+    ```bash
+    sudo apt -y install supervisor
+    ```
+  </Step>
+
+  <Step title="Generate the Supervisor configuration">
+    From inside your bench directory, generate the Supervisor configuration file:
+
+    ```bash
+    bench setup supervisor
+    ```
+
+    This creates `config/supervisor.conf` inside your bench directory with the correct process definitions for your bench.
+  </Step>
+
+  <Step title="Link the configuration">
+    Create a symlink so Supervisor picks up the bench configuration:
+
+    ```bash
+    sudo ln -s `pwd`/config/supervisor.conf /etc/supervisor/conf.d/frappe-bench.conf
+    ```
+
+    Run this command from your bench root directory so that `` `pwd` `` resolves to the correct absolute path.
+  </Step>
+
+  <Step title="Set the correct ownership in supervisord.conf">
+    Open the main Supervisor configuration file and set the `chown` option under `[unix_http_server]` to your Frappe Linux username:
+
+    ```bash
+    sudo nano /etc/supervisor/supervisord.conf
+    ```
+
+    Find or add the `chown` line and set it to your Frappe user:
+
+    ```ini
+    chown= yourfrappeusername:yourfrappeusername
+    ```
+
+    Replace `yourfrappeusername` with the actual Linux user that owns the bench.
+  </Step>
+
+  <Step title="Restart Supervisor">
+    Restart the Supervisor service to load the new configuration:
+
+    ```bash
+    sudo -A systemctl restart supervisor
+    ```
+  </Step>
+
+  <Step title="(Optional) Configure for a specific site">
+    If you need to generate a Supervisor configuration scoped to a single site:
+
+    ```bash
+    bench --site yoursite.com setup supervisor
+    ```
+
+    Replace `yoursite.com` with the name of your Frappe site.
+  </Step>
+</Steps>
+
+## Service management
+
+Use the following commands to manage the Supervisor service after setup:
+
+```bash
+sudo service supervisor start
+sudo service supervisor stop
+sudo service supervisor restart
+sudo service supervisor status
+```

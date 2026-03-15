@@ -1,0 +1,76 @@
+---
+title: "Install system dependencies"
+description: "Install Git, Python, pip, virtualenv, and wkhtmltopdf on Ubuntu."
+---
+
+<Note>
+  These instructions are for Ubuntu 18.04 and Ubuntu 20.04. If you are on ArchLinux, see the [ArchLinux installation guide](/archlinux).
+</Note>
+
+<Tip>
+  Run `sudo apt-get update` before starting to make sure your package index is current. This prevents "package not found" errors during installation.
+</Tip>
+
+<Steps>
+  <Step title="Install Git">
+    Install Git, the version control system required to fetch Frappe and its apps:
+
+    ```bash
+    sudo apt-get install git
+    ```
+  </Step>
+
+  <Step title="Install python3-dev">
+    Install `python3-dev` to enable compiling Python C extensions, which several Frappe dependencies require:
+
+    ```bash
+    sudo apt-get install python3-dev
+    ```
+  </Step>
+
+  <Step title="Install setuptools and pip">
+    Install `setuptools` and `pip`, the core Python package management tools:
+
+    ```bash
+    sudo apt-get install python3-setuptools python3-pip
+    ```
+  </Step>
+
+  <Step title="Install virtualenv">
+    Install `virtualenv` so that Frappe can create an isolated Python environment for its dependencies:
+
+    ```bash
+    sudo apt-get install virtualenv
+    ```
+
+    After installing, check your Python version to determine which `venv` package you also need:
+
+    ```bash
+    python3 -V
+    ```
+
+    If your Python version is **3.8.x**, run:
+
+    ```bash
+    sudo apt install python3.8-venv
+    ```
+
+    If your Python version is **3.10.x**, run:
+
+    ```bash
+    sudo apt install python3.10-venv
+    ```
+  </Step>
+
+  <Step title="Install wkhtmltopdf">
+    Install `wkhtmltopdf` along with its required dependencies. Frappe uses this to generate PDF documents:
+
+    ```bash
+    sudo apt-get install xvfb libfontconfig wkhtmltopdf
+    ```
+  </Step>
+</Steps>
+
+## Next step
+
+Proceed to [install and configure MariaDB](/ubuntu/mariadb-setup).

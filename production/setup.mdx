@@ -1,0 +1,93 @@
+---
+title: "Production server setup"
+description: "Set up Frappe and ERPNext for production with a dedicated system user."
+---
+
+<Warning>
+  This setup is intended for production servers only. Do not follow these steps for local development — use `bench start` in development mode instead.
+</Warning>
+
+<Steps>
+  <Step title="Create a dedicated system user">
+    Create a new user for running Frappe and grant it sudo access:
+
+    ```bash
+    sudo adduser dcode-frappe
+    sudo usermod -aG sudo dcode-frappe
+    su - dcode-frappe
+    ```
+
+    Create and activate a Python virtual environment for this user:
+
+    ```bash
+    python3 -m venv /path/to/my_env
+    source /path/to/my_env/bin/activate
+    ```
+  </Step>
+
+  <Step title="Install Frappe and ERPNext">
+    Follow these steps of the Ubuntu installation guide to install `frappe-bench`, initialize the bench, create a site, and install ERPNext:
+
+    - [Install frappe-bench](/ubuntu/frappe-bench)
+    - [Create a Frappe site](/ubuntu/create-site)
+    - [Install ERPNext](/ubuntu/install-erpnext)
+  </Step>
+
+  <Step title="Set up production mode">
+    From inside the `frappe-bench` directory, run the production setup command using your dedicated Frappe username:
+
+    ```bash
+    sudo bench setup production dcode-frappe
+    bench restart
+    ```
+
+    This configures Nginx and Supervisor to manage the Frappe processes automatically.
+  </Step>
+
+  <Step title="Access your production site">
+    Open your server's IP address in a web browser. You should see the Frappe login page.
+  </Step>
+</Steps>
+
+---
+
+## Switching between development and production modes
+
+<Tip>
+  You can switch freely between development and production modes. Stop the production services first, then use `bench start` for development. Reverse the steps to return to production.
+</Tip>
+
+### Switch to development mode
+
+Stop all production services:
+
+```bash
+sudo service supervisor stop
+sudo service redis stop
+sudo service nginx stop
+```
+
+Generate a `Procfile` and start the bench in development mode:
+
+```bash
+bench setup procfile
+bench start
+```
+
+### Return to production mode
+
+Restart all production services:
+
+```bash
+sudo service supervisor start
+sudo service redis start
+sudo service nginx start
+```
+
+### Check service status
+
+```bash
+sudo service supervisor status
+sudo service redis status
+sudo service nginx status
+```

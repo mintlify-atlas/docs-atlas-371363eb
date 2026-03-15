@@ -1,0 +1,59 @@
+---
+title: "SSL certificate setup"
+description: "Obtain and configure a Let's Encrypt SSL certificate for your Frappe site."
+---
+
+## Prerequisites
+
+Before obtaining an SSL certificate, make sure you have:
+
+- A registered domain name with a DNS A record pointing to your server's public IP address.
+- Nginx installed, configured, and running. See [Install and configure Nginx and Supervisor](/production/nginx-supervisor).
+- Port 80 open in your firewall so that Let's Encrypt can reach your server to verify domain ownership.
+
+<Steps>
+  <Step title="Add the Certbot PPA">
+    Add the official Certbot package repository:
+
+    ```bash
+    sudo add-apt-repository ppa:certbot/certbot
+    sudo apt update
+    ```
+  </Step>
+
+  <Step title="Install Certbot">
+    Install the Certbot Nginx plugin:
+
+    ```bash
+    sudo apt install python-certbot-nginx
+    ```
+  </Step>
+
+  <Step title="Obtain a certificate">
+    Run Certbot against your domain. Certbot will automatically update your Nginx configuration to enable HTTPS:
+
+    ```bash
+    sudo certbot --nginx -d example.com
+    ```
+
+    <Note>
+      Replace `example.com` with your actual domain name. If you have a `www` subdomain you also want to secure, add a second `-d` flag: `sudo certbot --nginx -d example.com -d www.example.com`.
+    </Note>
+
+    <Tip>
+      Certbot automatically modifies your Nginx configuration to redirect HTTP traffic to HTTPS and to set the correct SSL certificate paths. You do not need to edit the Nginx config manually.
+    </Tip>
+  </Step>
+
+  <Step title="Verify automatic renewal">
+    Let's Encrypt certificates expire after 90 days. Certbot installs a cron job (or systemd timer) that renews your certificate automatically before it expires.
+
+    Test the renewal process without actually renewing:
+
+    ```bash
+    sudo certbot renew --dry-run
+    ```
+
+    If the dry run completes without errors, automatic renewals are correctly configured. Certbot will renew the certificate and reload Nginx without any manual intervention.
+  </Step>
+</Steps>

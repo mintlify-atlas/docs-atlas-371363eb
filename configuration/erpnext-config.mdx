@@ -1,0 +1,57 @@
+---
+title: "ERPNext configuration"
+description: "Configure ERPNext environment variables, API credentials, and security settings."
+---
+
+After installing ERPNext, you configure it through a combination of environment variables, bench site config commands, and DNS settings.
+
+## API credentials
+
+Set the following environment variables to connect external applications or scripts to your ERPNext instance:
+
+```
+ERPNEXT_API_KEY = 'ad43b3e0a015a82'
+ERPNEXT_API_SECRET = 'd550eb2103b2a9b'
+ERPNEXT_URL = 'http://dev.local:8000'
+ERPNEXT_VERSION = 15
+```
+
+<Note>
+  Replace `ad43b3e0a015a82` and `d550eb2103b2a9b` with the actual API key and secret generated from your ERPNext user profile under **My Settings → API Access**. Never commit real credentials to version control.
+</Note>
+
+## Disable CSRF protection (development only)
+
+<Warning>
+  Never disable CSRF protection on a production site. This setting removes a critical security control that prevents cross-site request forgery attacks. It is only acceptable in isolated local development environments.
+</Warning>
+
+If you need to disable CSRF checking during local development (for example, when testing API calls from a separate frontend):
+
+```bash
+bench --site frappe.localhost set-config ignore_csrf 1
+```
+
+## Add a Frappe UI frontend
+
+To add the Frappe UI frontend application to your bench:
+
+```bash
+bench add-frappe-ui
+```
+
+## DNS multitenancy
+
+Enable DNS-based multitenancy so that the site served is determined automatically from the incoming hostname:
+
+```bash
+bench config dns_multitenant on
+```
+
+You can also set the current site name directly in `sites/currentsite.txt`:
+
+```bash
+nano sites/currentsite.txt
+```
+
+Write the site name (for example `banna.com`) into that file and save it.

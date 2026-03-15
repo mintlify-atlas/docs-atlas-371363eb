@@ -1,0 +1,82 @@
+---
+title: "Configure Redis"
+description: "Configure Redis for Frappe, including port changes and service management."
+---
+
+Frappe uses Redis for three distinct purposes:
+
+- **Caching** — stores rendered page fragments and query results to avoid redundant database reads.
+- **Queue** — manages background jobs (report generation, email sending, scheduled tasks) through RQ (Redis Queue).
+- **Real-time** — powers live updates in the browser via Socket.IO, so changes to documents appear instantly for all connected users.
+
+By default, Frappe expects Redis to be available on port `6379`.
+
+<Note>
+  The default Redis port is **6379**. If you change this port, you must update your Frappe bench configuration to match so the application can find the Redis instance.
+</Note>
+
+## Service management
+
+Use the following commands to control the Redis server service:
+
+```bash
+sudo service redis-server start
+sudo service redis-server stop
+sudo service redis-server restart
+sudo service redis-server status
+```
+
+## Change the Redis port
+
+<Steps>
+  <Step title="Edit the Redis configuration file">
+    Open the Redis configuration file:
+
+    ```bash
+    sudo nano /etc/redis/redis.conf
+    ```
+  </Step>
+
+  <Step title="Update the port number">
+    Find the line that sets the port (it will read `port 6379`) and change it to your desired port. Comment out the original line to keep a record of the previous value:
+
+    ```ini
+    # port 6379
+    port 11000
+    ```
+
+    Save the file with **Ctrl+X**, **Y**, **Enter**.
+  </Step>
+
+  <Step title="Restart Redis">
+    Restart the Redis service to apply the new port:
+
+    ```bash
+    sudo service redis-server restart
+    ```
+  </Step>
+
+  <Step title="Test the new port">
+    Verify Redis is listening on the new port by sending a `PING` command:
+
+    ```bash
+    redis-cli -h localhost -p 11000 ping
+    ```
+
+    Redis should respond with `PONG`. The example in the source also tests port `11001` if you have a second instance:
+
+    ```bash
+    redis-cli -h localhost -p 11001 ping
+    ```
+  </Step>
+</Steps>
+
+## Network diagnostics
+
+If you need to confirm which ports Redis (or other services) are listening on, install `net-tools` and use `netstat` or `lsof`:
+
+```bash
+sudo apt install net-tools
+sudo netstat -tuln | grep '13000\|11000'
+sudo lsof -i :13000
+```

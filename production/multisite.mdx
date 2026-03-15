@@ -1,0 +1,101 @@
+---
+title: "Multi-site setup"
+description: "Configure multiple Frappe sites on different ports using DNS or port-based routing."
+---
+
+<Note>
+  Frappe supports two multitenancy strategies. **Port-based routing** runs each site on a different port (e.g., `:80`, `:82`) and requires no DNS changes. **DNS-based routing** uses a different domain or subdomain for each site and routes requests by hostname — this requires DNS records pointing each domain at your server.
+</Note>
+
+<Tabs>
+  <Tab title="Port-based routing">
+    <Steps>
+      <Step title="Disable DNS multitenancy">
+        Switch off DNS-based multitenancy so that Frappe uses port-based routing instead:
+
+        ```bash
+        bench config dns_multitenant off
+        ```
+      </Step>
+
+      <Step title="Create a new site">
+        Create the additional site you want to serve on a separate port:
+
+        ```bash
+        bench new-site site2name
+        ```
+      </Step>
+
+      <Step title="Assign a port to the new site">
+        Set the Nginx port for the new site. In this example, port `82` is used:
+
+        ```bash
+        bench set-nginx-port site2name 82
+        ```
+      </Step>
+
+      <Step title="Regenerate the Nginx configuration">
+        Regenerate the Nginx config to include the new site and its port assignment:
+
+        ```bash
+        bench setup nginx
+        ```
+      </Step>
+
+      <Step title="Reload Nginx and Supervisor">
+        Apply the updated configuration:
+
+        ```bash
+        sudo service nginx reload
+        sudo service supervisor restart
+        ```
+
+        Your second site is now accessible at `http://your-server-ip:82`.
+      </Step>
+    </Steps>
+  </Tab>
+
+  <Tab title="DNS-based routing">
+    <Steps>
+      <Step title="Enable DNS multitenancy">
+        Switch on DNS-based multitenancy:
+
+        ```bash
+        bench config dns_multitenant on
+        ```
+      </Step>
+
+      <Step title="Set the active site name">
+        Write the site name into `sites/currentsite.txt` so Frappe knows which site to serve for incoming requests:
+
+        ```bash
+        nano sites/currentsite.txt
+        ```
+
+        Enter your site's domain name — for example:
+
+        ```
+        banna.com
+        ```
+
+        Save the file with `Ctrl+X`, then `Y`, then `Enter`.
+      </Step>
+
+      <Step title="Add the site to your host system (local testing only)">
+        If you are testing locally without a real DNS record, add an entry to your `/etc/hosts` file:
+
+        ```bash
+        sudo nano /etc/hosts
+        ```
+
+        Add the following line:
+
+        ```
+        127.0.0.1   frappe.localhost
+        ```
+
+        For a public-facing server, create a real DNS A record pointing your domain at your server's IP address instead.
+      </Step>
+    </Steps>
+  </Tab>
+</Tabs>

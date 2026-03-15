@@ -1,0 +1,82 @@
+---
+title: "Create a Frappe site"
+description: "Create a new Frappe site with its own database and admin credentials."
+---
+
+Each Frappe site gets its own MariaDB database, file storage, and configuration. You can run multiple sites from a single bench.
+
+<Note>
+  Replace placeholder values such as `dcode.com`, `[]`, and `banna.com` in the commands below with your actual site name, database credentials, and passwords.
+</Note>
+
+<Steps>
+  <Step title="Create a new site">
+    The simplest way to create a site:
+
+    ```bash
+    bench new-site dcode.com
+    ```
+
+    You will be prompted for the MariaDB root password and a new admin password for the site.
+
+    For a fully automated setup with all options passed explicitly, use the full form:
+
+    ```bash
+    bench new-site --db-name [] --db-password [] --db-type mariadb --db-host 127.0.0.1 --db-port 3306 --mariadb-root-username root --mariadb-root-password [] --no-mariadb-socket --admin-password Admin --install-app erpnext [].cybererps.com
+    ```
+  </Step>
+
+  <Step title="Add the site to your hosts file">
+    To access the site by name in your browser, add it to `/etc/hosts`:
+
+    ```bash
+    sudo nano /etc/hosts
+    ```
+
+    Add the following line:
+
+    ```
+    127.0.0.1   frappe.localhost
+    ```
+
+    Save with **Ctrl+X**, then **Y**, then **Enter**.
+  </Step>
+
+  <Step title="Explore site commands">
+    Once the site is running, you can interact with it using these bench commands:
+
+    Open an interactive Python console for the site:
+
+    ```bash
+    bench --site library.test console
+    ```
+
+    Connect directly to the site's MariaDB database:
+
+    ```bash
+    bench --site library.test mariadb
+    ```
+
+    Create a backup of the site:
+
+    ```bash
+    bench --site library.test backup
+    ```
+  </Step>
+
+  <Step title="Drop a site (optional)">
+    To permanently remove a site and its database, use `bench drop-site`:
+
+    ```bash
+    bench drop-site --mariadb-root-username admin@localhost --mariadb-root-password admin --force banna.com
+    ```
+
+    <Warning>
+      This action is irreversible. The site database and all its data will be permanently deleted.
+    </Warning>
+  </Step>
+</Steps>
+
+## Next step
+
+Proceed to [install ERPNext](/ubuntu/install-erpnext).

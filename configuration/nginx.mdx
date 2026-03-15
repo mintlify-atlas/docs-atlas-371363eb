@@ -1,0 +1,95 @@
+---
+title: "Configure Nginx"
+description: "Set up Nginx as a reverse proxy for Frappe in production."
+---
+
+Nginx acts as the reverse proxy in front of Frappe's Gunicorn web server. It handles SSL termination, static file serving, and routing requests to the correct site in multi-tenant setups.
+
+<Note>
+  `bench setup nginx` generates the Nginx configuration file automatically based on your bench and site settings. You do not need to write the Nginx config by hand — run the bench command and then link the generated file.
+</Note>
+
+<Steps>
+  <Step title="Install Nginx">
+    Install the Nginx package:
+
+    ```bash
+    sudo apt -y install nginx
+    ```
+  </Step>
+
+  <Step title="Generate the Nginx configuration">
+    From inside your bench directory, generate the Nginx configuration:
+
+    ```bash
+    bench setup nginx
+    ```
+
+    This creates `config/nginx.conf` inside your bench directory.
+  </Step>
+
+  <Step title="Link the configuration">
+    Create a symlink so Nginx loads the bench configuration:
+
+    ```bash
+    sudo ln -s `pwd`/config/nginx.conf /etc/nginx/conf.d/frappe-bench.conf
+    ```
+
+    Run this command from your bench root directory so that `` `pwd` `` resolves to the correct absolute path.
+  </Step>
+
+  <Step title="Reload Nginx">
+    Reload Nginx to apply the new configuration without dropping existing connections:
+
+    ```bash
+    sudo service nginx reload
+    ```
+  </Step>
+</Steps>
+
+## Service management
+
+```bash
+sudo service nginx reload
+sudo service nginx restart
+sudo service nginx status
+```
+
+## Multi-site port configuration
+
+If you run multiple sites on a single server and DNS multitenancy is not available, you can assign each site a different port.
+
+<Steps>
+  <Step title="Disable DNS multitenancy">
+    ```bash
+    bench config dns_multitenant off
+    ```
+  </Step>
+
+  <Step title="Create the second site">
+    ```bash
+    bench new-site site2name
+    ```
+  </Step>
+
+  <Step title="Assign a port to the new site">
+    ```bash
+    bench set-nginx-port site2name 82
+    ```
+
+    Replace `site2name` with your site name and `82` with the port you want to use.
+  </Step>
+
+  <Step title="Regenerate the Nginx configuration">
+    ```bash
+    bench setup nginx
+    ```
+  </Step>
+
+  <Step title="Reload Nginx and restart Supervisor">
+    ```bash
+    sudo service nginx reload
+    sudo service supervisor restart
+    ```
+  </Step>
+</Steps>

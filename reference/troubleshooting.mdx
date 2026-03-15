@@ -1,0 +1,212 @@
+---
+title: "Troubleshooting"
+description: "Solutions for common issues during Frappe and ERPNext installation and operation."
+---
+
+Use the sections below to diagnose and resolve the most common problems encountered during Frappe and ERPNext installation on Ubuntu.
+
+<AccordionGroup>
+  <Accordion title="MySQL root password issues">
+    If you cannot connect to MariaDB as the root user, reset the root password by starting MySQL in safe mode.
+
+    **1. Stop the MySQL service and kill any running processes:**
+    ```bash
+    sudo systemctl stop mysql
+    killall mysqld
+    ```
+
+    **2. Create an init file with the password reset statement:**
+    ```bash
+    sudo nano /home/[username]/mysql-init
+    ```
+    Add the following line to the file:
+    ```sql
+    ALTER USER 'root'@'localhost' IDENTIFIED BY 'NewPassword';
+    ```
+
+    **3. Start mysqld with the init file:**
+    ```bash
+    sudo mysqld --init-file=/home/[username]/mysql-init &
+    sudo service mysql start
+    ```
+
+    **4. Alternatively, start MySQL in safe mode:**
+    ```bash
+    sudo mysqld_safe --skip-grant-tables --skip-networking &
+    ```
+
+    **5. Connect as root and update the password:**
+    ```bash
+    sudo mysql -u root
+    ```
+    ```sql
+    USE mysql;
+    UPDATE user SET authentication_string=PASSWORD('new_password') WHERE User='root';
+    FLUSH PRIVILEGES;
+    EXIT;
+    ```
+
+    **6. Stop safe mode and restart normally:**
+    ```bash
+    sudo killall mysqld_safe
+    sudo systemctl start mysql
+    ```
+  </Accordion>
+
+  <Accordion title="Yarn installation errors">
+    If `sudo npm install -g yarn` fails or the `yarn` command is not found after installation, remove the existing installation and reinstall.
+
+    **Remove the broken Yarn installation:**
+    ```bash
+    sudo npm uninstall -g yarn
+    sudo rm -rf /usr/bin/yarn
+    ```
+
+    **Reinstall Yarn:**
+    ```bash
+    sudo npm install -g yarn
+    ```
+
+    Verify the installation:
+    ```bash
+    yarn --version
+    ```
+  </Accordion>
+
+  <Accordion title="Network port conflicts">
+    If Redis or another service fails to start because a port is already in use, identify and stop the conflicting process.
+
+    **Install net-tools if not already present:**
+    ```bash
+    sudo apt install net-tools
+    ```
+
+    **Check which processes are listening on ports 13000 and 11000:**
+    ```bash
+    sudo netstat -tuln | grep '13000\|11000'
+    ```
+
+    **Find the process using a specific port:**
+    ```bash
+    sudo lsof -i :13000
+    ```
+
+    **Kill the conflicting process by PID:**
+    ```bash
+    sudo kill <PID>
+    ```
+    Replace `<PID>` with the actual process ID returned by `lsof`.
+  </Accordion>
+
+  <Accordion title="Redis connection issues">
+    If Frappe cannot connect to Redis, the port configuration in `redis.conf` may not match what the bench expects.
+
+    **Open the Redis configuration file:**
+    ```bash
+    sudo nano /etc/redis/redis.conf
+    ```
+
+    Change the port number to the one your bench is configured to use (e.g., `11000`) and comment out the default port `6379`:
+    ```
+    # port 6379
+    port 11000
+    ```
+
+    **Restart Redis and verify the new port is listening:**
+    ```bash
+    sudo service redis-server restart
+    redis-cli -h localhost -p 11001 ping
+    ```
+
+    A `PONG` response confirms Redis is running on the new port.
+  </Accordion>
+
+  <Accordion title="Supervisor ownership error">
+    If Supervisor fails to start with a permission or ownership error, update the `chown` setting in `supervisord.conf`.
+
+    **Open the Supervisor configuration file:**
+    ```bash
+    sudo nano /etc/supervisor/supervisord.conf
+    ```
+
+    Find the `chown` line and replace the placeholder with your actual Frappe username:
+    ```
+    chown=yourfrappeusername:yourfrappeusername
+    ```
+
+    **Restart Supervisor:**
+    ```bash
+    sudo -A systemctl restart supervisor
+    ```
+  </Accordion>
+
+  <Accordion title="Python version mismatch">
+    The `venv` module must match your installed Python version. If you see an error such as `Error: Command '['python3', '-Im', 'ensurepip']' returned non-zero exit status`, install the correct `venv` package.
+
+    **Check your Python version:**
+    ```bash
+    python3 -V
+    ```
+
+    **For Python 3.8.x:**
+    ```bash
+    sudo apt install python3.8-venv
+    ```
+
+    **For Python 3.10.x:**
+    ```bash
+    sudo apt install python3.10-venv
+    ```
+
+    After installing the correct package, retry the `bench init` or virtual environment creation step.
+  </Accordion>
+
+  <Accordion title="bench command not found after install">
+    After running `pip3 install frappe-bench`, the `bench` command may not be available immediately because the shell has not reloaded its `PATH`.
+
+    Log out of your terminal session and log back in, then verify the installation:
+    ```bash
+    bench --version
+    ```
+
+    If `bench` is still not found, check that the Python user scripts directory (typically `~/.local/bin`) is in your `PATH`:
+    ```bash
+    echo $PATH
+    ```
+
+    Add it to your shell profile if necessary:
+    ```bash
+    export PATH=$PATH:~/.local/bin
+    ```
+  </Accordion>
+
+  <Accordion title="MariaDB won't start after config change">
+    If MariaDB fails to start after editing `/etc/mysql/my.cnf`, there is likely a syntax error in the configuration file.
+
+    **Check the MariaDB error log for details:**
+    ```bash
+    sudo journalctl -u mysql --no-pager | tail -30
+    ```
+
+    **Re-open the config file and verify the syntax:**
+    ```bash
+    sudo nano /etc/mysql/my.cnf
+    ```
+
+    Ensure the Unicode configuration block looks exactly like this, with no stray characters:
+    ```
+    [mysqld]
+    character-set-client-handshake = FALSE
+    character-set-server = utf8mb4
+    collation-server = utf8mb4_unicode_ci
+
+    [mysql]
+    default-character-set = utf8mb4
+    ```
+
+    **Restart the MariaDB service after fixing the config:**
+    ```bash
+    sudo service mysql restart
+    ```
+  </Accordion>
+</AccordionGroup>

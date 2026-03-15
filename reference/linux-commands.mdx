@@ -1,0 +1,100 @@
+---
+title: "Linux user and login commands"
+description: "Useful Linux commands for checking user details and login information on your server."
+---
+
+These commands help you inspect user accounts and review login activity on your Ubuntu server — useful for auditing access during and after a Frappe installation.
+
+## User information
+
+**Show user and group IDs:**
+```bash
+id username
+```
+Displays the numeric user ID (UID), primary group ID (GID), and all supplementary group memberships for the specified user.
+
+**View user group memberships:**
+```bash
+groups username
+```
+Lists all groups the specified user belongs to.
+
+**Show user information:**
+```bash
+finger username
+```
+Displays the user's full name, home directory, shell, and other account details. Requires the `finger` package.
+
+**Fetch user info from the system database:**
+```bash
+getent passwd username
+```
+Retrieves the user's entry from the system Name Service Switch (NSS) database, including UID, GID, home directory, and default shell. Works with both local `/etc/passwd` and LDAP-backed systems.
+
+**Search for a user in /etc/passwd:**
+```bash
+grep username /etc/passwd
+```
+Searches `/etc/passwd` directly for a matching entry. Returns the raw colon-delimited record for that user.
+
+**Display all user accounts:**
+```bash
+lslogins -u
+```
+Prints a formatted table of all user accounts on the system, including UID, username, last login time, and account status.
+
+---
+
+## Currently logged-in users
+
+**List current logged-in users:**
+```bash
+users
+```
+Outputs a space-separated list of usernames that currently have an active login session.
+
+**Show logged-in users with session details:**
+```bash
+who -u
+```
+Displays each logged-in user along with their terminal, login time, idle time, and process ID.
+
+**Show logged-in user activity:**
+```bash
+w
+```
+Provides a summary of currently logged-in users and what they are running, including CPU usage and the command each user last executed.
+
+---
+
+## Login history
+
+**Show most recent login sessions:**
+```bash
+last
+```
+Displays a list of the most recent login sessions, including username, terminal, source host, login time, and session duration.
+
+**Show users logged in right now:**
+```bash
+last -ap now
+```
+Filters the login history to show only sessions that are currently active.
+
+**Show failed login attempts:**
+```bash
+lastb
+```
+Lists failed login attempts read from `/var/log/btmp`. Useful for detecting unauthorized access attempts. Requires root or sudo.
+
+**List all users' last login times:**
+```bash
+lastlog
+```
+Shows the most recent login for every user account on the system.
+
+**Show last login for a specific user:**
+```bash
+lastlog -u username
+```
+Filters `lastlog` output to a single user.
